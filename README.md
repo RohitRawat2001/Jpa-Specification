@@ -287,8 +287,6 @@ The EmployeeService class also contains methods to build specifications dynamica
 # - Like Operation:             //These 3 are in service class
 # - Combined Search:
 
-
-
 # Controller Class
 ```java
 package com.filter.demo.controller;
