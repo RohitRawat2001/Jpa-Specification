@@ -89,6 +89,7 @@ Holds a list of search specifications and an overall operation (AND/OR).
 public interface EmployeeRepo extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
 }
 ```
+
 Extends JpaRepository for CRUD operations and JpaSpecificationExecutor for executing specifications.
 # Service Class
 ```java
