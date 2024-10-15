@@ -32,6 +32,8 @@ public class Employee {
     private Address address;
 }
 ```
+
+
 Represents an employee with attributes like id, name, salary, doj (date of joining), skill, and a reference to the Address entity.
 # Address Entity
 
