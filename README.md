@@ -9,6 +9,7 @@ JPA Specifications are a way to create dynamic queries in a type-safe manner usi
 - CriteriaBuilder: A factory for constructing criteria queries, compound selections, expressions, predicates, and orderings.
 - Predicate: Represents a condition in a query. You can combine predicates using logical operators.
 ```
+
 # Code Explanation
 Entity Classes
 Employee Entity
