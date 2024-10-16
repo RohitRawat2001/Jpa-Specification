@@ -3,6 +3,7 @@
 # What are JPA Specifications?
 JPA Specifications are a way to create dynamic queries in a type-safe manner using the Criteria API. They allow you to define complex query conditions and easily combine them with logical operators (AND, OR).
 
+
 # Key Components of JPA Specifications
 ```json
 - Specification Interface: This is the core interface that allows you to define your custom query logic.
