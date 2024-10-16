@@ -355,3 +355,93 @@ Defines endpoints to retrieve employee data using the service methods based on v
 - Reusability: Specifications can be reused across different queries, promoting clean code and separation of concerns.
 - These notes should help you understand JPA Specifications and how they can be effectively utilized in your Java Spring applications!
 ```
+
+# With Simple Class
+
+```java
+package com.BackendProject.Blog.services.specification;
+import com.BackendProject.Blog.entities.SearchSpecification;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GenericSpecificationBuilder<T> {
+
+    public Specification<T> getSpecificationForList(List<SearchSpecification> searchSpecificationList, String overallOp) {
+        List<Predicate> predicateList = new ArrayList<>();
+
+        return (root, query, criteriaBuilder) -> {
+            for (SearchSpecification sf : searchSpecificationList) {
+                String operation = sf.getOperation();
+                switch (operation) {
+                    case "EQUAL" -> {
+                        Predicate equal = criteriaBuilder.equal(root.get(sf.getColumnName()), sf.getValue());
+                        predicateList.add(equal);
+                    }
+                    case "GREATER_THAN" -> {
+                        Predicate greaterThan = criteriaBuilder.greaterThan(root.get(sf.getColumnName()), sf.getValue());
+                        predicateList.add(greaterThan);
+                    }
+                    case "GREATER_THAN_EQUAL" -> {
+                        Predicate greaterThanOrEqualTo = criteriaBuilder.greaterThanOrEqualTo(root.get(sf.getColumnName()), sf.getValue());
+                        predicateList.add(greaterThanOrEqualTo);
+                    }
+                    case "LESS_THAN" -> {
+                        Predicate lessThan = criteriaBuilder.lessThan(root.get(sf.getColumnName()), sf.getValue());
+                        predicateList.add(lessThan);
+                    }
+                    case "LESS_THAN_EQUAL" -> {
+                        Predicate lessThanOrEqualTo = criteriaBuilder.lessThanOrEqualTo(root.get(sf.getColumnName()), sf.getValue());
+                        predicateList.add(lessThanOrEqualTo);
+                    }
+                    case "LIKE" -> {
+                        Predicate like = criteriaBuilder.like(root.get(sf.getColumnName()), "%" + sf.getValue() + "%");
+                        predicateList.add(like);
+                    }
+                    case "IN" -> {
+                        String[] values = sf.getValue().split(",");
+                        Predicate in = root.get(sf.getColumnName()).in(List.of(values));
+                        predicateList.add(in);
+                    }
+                    // Add more cases as needed for your logic
+                }
+            }
+
+            if ("AND".equalsIgnoreCase(overallOp)) {
+                return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
+            } else {
+                return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
+            }
+        };
+    }
+}
+```
+
+- service
+
+```java
+    @Override
+    public List<UserDto> getDetailsFromList(List<SearchSpecification> searchSpecificationList, String op) {
+        // Use the generic specification builder for the User entity
+        GenericSpecificationBuilder<User> specBuilder = new GenericSpecificationBuilder<>();
+
+        // Get the specification using the generic method
+        Specification<User> specificationForList = specBuilder.getSpecificationForList(searchSpecificationList, op);
+
+        // Fetch the users based on the generated specification
+        List<User> users = userRepo.findAll(specificationForList);
+
+        // Map the User entities to UserDto objects
+        return users.stream()
+                .map(this::userToDto) // Assuming userToDto is your method for converting User to UserDto
+                .collect(Collectors.toList());
+    }
+```
+- Controller
+```java
+    @GetMapping("/ByList")
+    public ResponseEntity<List<UserDto>> byList(@RequestBody RequestDTO input){
+        return ResponseEntity.ok(userService.getDetailsFromList(input.getSpecificationList(),input.getOverallOperation()));
+    }
+```
