@@ -11,6 +11,7 @@ JPA Specifications are a way to create dynamic queries in a type-safe manner usi
 ```
 
 # Code Explanation
+
 Entity Classes
 Employee Entity
 ```java
